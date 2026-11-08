@@ -95,7 +95,11 @@ async function main() {
   console.log(JSON.stringify({ action: "bundle", status: "complete", time_sec: bundleTime }));
 
   // Open shared browser instance
-  const browser = await openBrowser("chrome");
+  // Use a local Chrome/Chromium when available (REMOTION_BROWSER_EXECUTABLE, or the
+  // preinstalled headless shell in cloud containers) instead of downloading one.
+  const localShell = "/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell";
+  const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE || (fs.existsSync(localShell) ? localShell : null);
+  const browser = await openBrowser("chrome", browserExecutable ? { browserExecutable } : undefined);
 
   const results = [];
 
